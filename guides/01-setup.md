@@ -1,0 +1,9 @@
+# Setup and troubleshooting
+
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), open a terminal in this repository, and run `uv sync` followed by `uv run jupyter lab`. uv uses the Python version in `.python-version`, installing it if necessary, and creates `.venv`. The project selects CPU wheels from the official PyTorch index; on a supported Mac the CPU build can also use MPS, although the examples intentionally use CPU for consistency. It may be a large download.
+
+In VS Code, open the repository folder, open a notebook, and choose **Select Kernel → Python Environments → .venv**. Installing the Python and Jupyter extensions may be necessary. In JupyterLab launched with `uv run`, select the Python 3 kernel from the project environment. Verify with `import sys; print(sys.executable)` and `import torch; print(torch.__version__)`.
+
+If a package is missing, confirm the selected kernel points to this repository's `.venv`, then rerun `uv sync`. If a data path is not found, launch Jupyter from the repository root or `notebooks/`. Restart the kernel and run all cells in order if names or plots look stale. On Windows, the examples use `num_workers=0` to avoid multiprocessing complications.
+
+The default project does not install a CUDA-enabled PyTorch build. An NVIDIA GPU requires compatible drivers and a matching PyTorch distribution; see the [official selection instructions](https://pytorch.org/get-started/locally/) and [uv PyTorch guide](https://docs.astral.sh/uv/guides/integration/pytorch/). Changing the index in `pyproject.toml` changes the project environment and lockfile. To move an example to an available device, move both model and batch tensors using `.to(device)`; tensors on different devices cannot be combined. The small exercises do not need acceleration.

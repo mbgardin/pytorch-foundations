@@ -1,0 +1,11 @@
+# Bring your own data
+
+Start with [notebook 08](../notebooks/08_your_own_model.ipynb) and a CSV with one observation per row, numeric feature columns, and a categorical target column. The included example uses `feature_1`, `feature_2`, `feature_3`, and an integer `label` taking values 0 or 1. Its `split` column is supplied for reproducible teaching; most new data will need a split made before preprocessing. Adapt the column lists and class count rather than assuming these names or dimensions.
+
+1. Inspect row units, feature meanings, missing values, duplicates, class balance, and potential leakage. Remove identifiers and any fields unavailable at prediction time. Handle missing data with a rule fitted on training data only.
+2. Choose an appropriate train/validation/test split. For ordinary independent rows, a stratified random split can preserve class proportions; use group or time-aware splits when needed. Do not use the test set to select features or tune models.
+3. Fit a scaler and categorical encoders on training rows. Apply the same fitted transformations and column order to all other splits. Map class names consistently to integers from 0 through `C-1`, and save that mapping. Inspect categories absent from training. For mixed data, an sklearn `ColumnTransformer` is a natural starting point; convert its output to dense `float32` only when its size permits.
+4. Convert features to `torch.float32` and class indices to `torch.long`. Build a Dataset and DataLoaders; shuffle only training rows. Set the model's input size to the transformed feature count and its output size to the number of classes. Inspect one batch before training.
+5. Select model and hyperparameters using validation performance; assess the final choice once on held-out test data. Save model weights together with the architecture configuration, feature order, fitted preprocessing, and label mapping.
+
+For images, audio, text, or very large tables, implement `__len__` and `__getitem__` to load and transform one observation on demand. The same training loop still applies, but input shapes, transformations, architectures, and batching will change. Apply random augmentation only to training examples and choose transformations that preserve the label. If data are sensitive, keep them out of the repository and follow your course's data-use rules.
